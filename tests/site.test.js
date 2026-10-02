@@ -55,6 +55,15 @@ test("every image has alt text and explicit dimensions", () => {
   }
 });
 
+test("the name section explains Oasis, Horizon and On the horizon", () => {
+  const section = index.match(/<section id="meaning"[\s\S]*?<\/section>/)?.[0];
+  assert.ok(section, "no meaning section");
+  for (const term of ["Oasis", "Horizon", "On the horizon"]) {
+    assert.match(section, new RegExp(`<dt>${term}</dt>`));
+  }
+  assert.match(index, /href="#meaning"/, "meaning section is not in the nav");
+});
+
 test("inquiry links go to a real mailbox", () => {
   const mailtos = [...index.matchAll(/href="mailto:([^"?]+)/g)].map((m) => m[1]);
   assert.ok(mailtos.length > 0, "no mailto link on the page");

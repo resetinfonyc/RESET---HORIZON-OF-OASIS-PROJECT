@@ -22,8 +22,19 @@ test("home page points search engines and link previews at the domain", () => {
   assert.match(index, /<link rel="canonical" href="https:\/\/horizonofoasis\.com\/">/);
   assert.match(index, /<meta property="og:url" content="https:\/\/horizonofoasis\.com\/">/);
   assert.match(index, /<meta property="og:image" content="https:\/\/horizonofoasis\.com\/images\/og\.jpg">/);
-  assert.match(index, /<title>Horizon of Oasis[^<]*<\/title>/);
+  assert.match(index, /<title>RESET - HORIZON OF OASIS[^<]*<\/title>/);
   assert.match(index, /<meta name="description" content="[^"]{50,160}">/);
+});
+
+test('brand name reads "RESET - HORIZON OF OASIS" everywhere it is shown', () => {
+  const BRAND = "RESET - HORIZON OF OASIS";
+  assert.ok(index.includes(`<meta property="og:site_name" content="${BRAND}">`), "og:site_name");
+  assert.ok(index.includes(`<meta property="og:title" content="${BRAND}">`), "og:title");
+  assert.ok(index.includes(`"name": "${BRAND}"`), "JSON-LD name");
+  assert.ok(index.includes(`<a class="wordmark" href="/">${BRAND}</a>`), "header wordmark");
+  assert.ok(index.includes(`<h1 id="hero-title">${BRAND}</h1>`), "hero heading");
+  assert.ok(new RegExp(`<footer[\\s\\S]*${BRAND}[\\s\\S]*</footer>`).test(index), "footer");
+  assert.ok(read("public/404.html").includes(BRAND), "404 page");
 });
 
 for (const page of htmlPages) {

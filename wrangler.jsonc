@@ -1,0 +1,13 @@
+{
+  "name": "horizon-of-oasis",
+  "compatibility_date": "2026-10-01",
+  // Static site: every file in ./public is served as-is by Workers static assets.
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "404-page"
+  },
+  // Attaches horizonofoasis.com on deploy. The domain must be a zone in the same Cloudflare account.
+  "routes": [
+    { "pattern": "horizonofoasis.com", "custom_domain": true }
+  ]
+}

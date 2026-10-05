@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://horizonofoasis.com/sitemap.xml
+Sitemap: https://resethoasis.com/sitemap.xml

@@ -1,4 +1,4 @@
-# Horizon of Oasis
+# RESET - HORIZON OF OASIS
 
 The website for [horizonofoasis.com](https://horizonofoasis.com): a private 40-acre estate retreat in Pennsylvania, about two hours from New York City.
 

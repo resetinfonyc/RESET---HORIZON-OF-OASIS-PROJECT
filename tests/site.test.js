@@ -31,7 +31,7 @@ test('brand name reads "RESET - HORIZON OF OASIS" everywhere it is shown', () =>
   assert.ok(index.includes(`<meta property="og:site_name" content="${BRAND}">`), "og:site_name");
   assert.ok(index.includes(`<meta property="og:title" content="${BRAND}">`), "og:title");
   assert.ok(index.includes(`"name": "${BRAND}"`), "JSON-LD name");
-  assert.ok(index.includes(`<a class="wordmark" href="/">${BRAND}</a>`), "header wordmark");
+  assert.ok(index.includes(`<span class="wordmark">${BRAND}</span>`), "header wordmark");
   assert.ok(index.includes(`<h1 id="hero-title">${BRAND}</h1>`), "hero heading");
   assert.ok(new RegExp(`<footer[\\s\\S]*${BRAND}[\\s\\S]*</footer>`).test(index), "footer");
   assert.ok(read("public/404.html").includes(BRAND), "404 page");
@@ -102,4 +102,25 @@ test("wrangler config serves ./public on horizonofoasis.com", () => {
   assert.ok(existsSync(join(pub, "404.html")));
   assert.deepEqual(cfg.routes, [{ pattern: "horizonofoasis.com", custom_domain: true }]);
   assert.match(cfg.compatibility_date, /^\d{4}-\d{2}-\d{2}$/);
+});
+
+test("header shows the Horizon Lid logo next to the name", () => {
+  const header = index.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
+  assert.match(header, /<img class="brand-mark" src="\/images\/brand\/logo-icon\.svg" alt=""/);
+  assert.match(header, /<a class="brand" href="\/" aria-label="RESET - HORIZON OF OASIS, home">/);
+});
+
+for (const page of htmlPages) {
+  test(`${page}: links the logo favicons and app icons`, () => {
+    const html = read(`public/${page}`);
+    for (const href of ["/favicon.ico", "/favicon.svg", "/favicon-32x32.png", "/apple-touch-icon.png", "/site.webmanifest"]) {
+      assert.ok(html.includes(`href="${href}"`), `${page} is missing ${href}`);
+    }
+  });
+}
+
+test("web manifest icons all exist", () => {
+  const manifest = JSON.parse(read("public/site.webmanifest"));
+  assert.ok(manifest.icons.length >= 2);
+  for (const icon of manifest.icons) assert.ok(existsSync(join(pub, icon.src)), icon.src);
 });

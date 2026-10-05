@@ -6,7 +6,7 @@ import { join } from "node:path";
 const root = new URL("..", import.meta.url).pathname;
 const pub = join(root, "public");
 const read = (p) => readFileSync(join(root, p), "utf8");
-const SITE = "https://horizonofoasis.com/";
+const SITE = "https://resethoasis.com/";
 
 const htmlPages = readdirSync(pub).filter((f) => f.endsWith(".html"));
 const index = read("public/index.html");
@@ -19,9 +19,9 @@ function localRefs(html) {
 }
 
 test("home page points search engines and link previews at the domain", () => {
-  assert.match(index, /<link rel="canonical" href="https:\/\/horizonofoasis\.com\/">/);
-  assert.match(index, /<meta property="og:url" content="https:\/\/horizonofoasis\.com\/">/);
-  assert.match(index, /<meta property="og:image" content="https:\/\/horizonofoasis\.com\/images\/og\.jpg">/);
+  assert.match(index, /<link rel="canonical" href="https:\/\/resethoasis\.com\/">/);
+  assert.match(index, /<meta property="og:url" content="https:\/\/resethoasis\.com\/">/);
+  assert.match(index, /<meta property="og:image" content="https:\/\/resethoasis\.com\/images\/og\.jpg">/);
   assert.match(index, /<title>RESET - HORIZON OF OASIS[^<]*<\/title>/);
   assert.match(index, /<meta name="description" content="[^"]{50,160}">/);
 });
@@ -89,17 +89,40 @@ test("public page keeps investor-only material out", () => {
 });
 
 test("robots.txt and sitemap.xml use the production domain", () => {
-  assert.match(read("public/robots.txt"), /Sitemap: https:\/\/horizonofoasis\.com\/sitemap\.xml/);
+  assert.match(read("public/robots.txt"), /Sitemap: https:\/\/resethoasis\.com\/sitemap\.xml/);
   assert.match(read("public/sitemap.xml"), new RegExp(`<loc>${SITE}</loc>`));
 });
 
-test("wrangler config serves ./public on horizonofoasis.com", () => {
+test("wrangler config serves ./public on resethoasis.com and keeps the old domain", () => {
   // JSONC: drop full-line // comments before parsing.
   const cfg = JSON.parse(read("wrangler.jsonc").replace(/^\s*\/\/.*$/gm, ""));
   assert.equal(cfg.name, "horizon-of-oasis");
   assert.equal(cfg.assets.directory, "./public");
   assert.equal(cfg.assets.not_found_handling, "404-page");
   assert.ok(existsSync(join(pub, "404.html")));
-  assert.deepEqual(cfg.routes, [{ pattern: "horizonofoasis.com", custom_domain: true }]);
+  assert.equal(cfg.main, "./src/index.js");
+  assert.equal(cfg.assets.binding, "ASSETS");
+  assert.equal(cfg.assets.run_worker_first, true);
+  assert.deepEqual(cfg.routes, [
+    { pattern: "resethoasis.com", custom_domain: true },
+    { pattern: "horizonofoasis.com", custom_domain: true },
+  ]);
   assert.match(cfg.compatibility_date, /^\d{4}-\d{2}-\d{2}$/);
+});
+
+test("old horizonofoasis.com addresses redirect permanently to resethoasis.com", async () => {
+  const { redirectFor } = await import("../src/index.js");
+  for (const host of ["horizonofoasis.com", "www.horizonofoasis.com"]) {
+    const res = redirectFor(`http://${host}/images/og.jpg?ref=ig`);
+    assert.equal(res.status, 301);
+    assert.equal(res.headers.get("Location"), "https://resethoasis.com/images/og.jpg?ref=ig");
+  }
+});
+
+test("requests on resethoasis.com are served, not redirected", async () => {
+  const { default: worker, redirectFor } = await import("../src/index.js");
+  assert.equal(redirectFor("https://resethoasis.com/"), null);
+  const served = new Response("ok");
+  const env = { ASSETS: { fetch: async () => served } };
+  assert.equal(await worker.fetch(new Request("https://resethoasis.com/"), env), served);
 });

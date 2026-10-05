@@ -72,6 +72,18 @@ a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   gap: 1rem;
   padding: 1.25rem var(--gutter);
 }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  min-width: 0;
+}
+.brand-mark {
+  height: clamp(1.9rem, 6vw, 2.6rem);
+  width: auto;
+  flex: none;
+}
 .wordmark {
   font-family: var(--serif);
   font-size: clamp(1rem, 3.6vw, 1.3rem);

@@ -1,6 +1,6 @@
 # RESET - HORIZON OF OASIS
 
-The website for [horizonofoasis.com](https://horizonofoasis.com): a private 50+ acre estate retreat in Pennsylvania, about two hours from New York City.
+The website for [horizonofoasis.com](https://horizonofoasis.com): a private 50+ acre estate retreat in the East Texas pine woods, about 90 minutes from Dallas.
 
 Right now it's a single home page. It runs on Cloudflare Workers as a static site, so a full site can grow out of it by adding pages to `public/`.
 

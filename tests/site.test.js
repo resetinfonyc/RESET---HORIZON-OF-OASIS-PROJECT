@@ -124,3 +124,19 @@ test("web manifest icons all exist", () => {
   assert.ok(manifest.icons.length >= 2);
   for (const icon of manifest.icons) assert.ok(existsSync(join(pub, icon.src)), icon.src);
 });
+
+test("estate size reads 50+ acres, with no 40-acre copy left", () => {
+  for (const file of ["public/index.html", "README.md"]) {
+    assert.doesNotMatch(read(file), /\b40[- ]acres?\b/, `${file} still says 40 acres`);
+  }
+  assert.ok(index.includes("<strong>50+</strong>"), "acreage stat");
+  assert.ok(index.includes("private 50+ acre estate"), "hero copy");
+});
+
+test("location reads East Texas near Dallas, with no Pennsylvania or New York copy left", () => {
+  for (const file of ["public/index.html", "README.md"]) {
+    assert.doesNotMatch(read(file), /Pennsylvania|New York|Manhattan/, `${file} still names the old location`);
+  }
+  assert.ok(index.includes("<strong>~90 min</strong><span>by car from Dallas</span>"), "drive-time stat");
+  assert.ok(index.includes("Experiential hospitality · East Texas"), "eyebrow");
+});

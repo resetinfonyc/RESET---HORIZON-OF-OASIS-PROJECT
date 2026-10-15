@@ -140,3 +140,24 @@ test("location reads East Texas near Dallas, with no Pennsylvania or New York co
   assert.ok(index.includes("<strong>~90 min</strong><span>by car from Dallas</span>"), "drive-time stat");
   assert.ok(index.includes("Experiential hospitality · East Texas"), "eyebrow");
 });
+
+test("home page follows the proposal: idea, estate plan, location map, land and phases", () => {
+  for (const id of ["estate", "meaning", "experience", "location", "occasions", "inquire"]) {
+    assert.match(index, new RegExp(`<section id="${id}"`), `missing section #${id}`);
+  }
+  assert.match(index, /src="\/images\/estate-plan\.webp"/, "estate illustration");
+  assert.match(index, /<svg viewBox="0 0 520 470" role="img" aria-labelledby="map-title">/, "location map");
+  assert.match(index, /<h2 id="phases-title">/, "phases section");
+  assert.match(index, /<h2 id="land-title">/, "on-the-land section");
+});
+
+test("location names the region, not a county or town", () => {
+  const text = index.replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(text, /Wood County|Van Zandt|Mineola|Winnsboro|Lake Fork/);
+});
+
+test("styles use the proposal palette", () => {
+  const css = read("public/styles.css");
+  for (const token of ["--dk: #1f1915", "--cr: #efe9df", "--cu: #c98f74"]) assert.ok(css.includes(token), token);
+  assert.match(index, /family=Cormorant\+Garamond[^"]*family=Jost/);
+});
